@@ -22,18 +22,17 @@ class CalculatedTimeComponent extends React.Component{
   }
 
   doFetchJobStatus = () => {    
-    var that = this;
-    var url = 'http://localhost/v1/status/78509567-9bfd-4b92-8a95-6f22fbb4f3c4'
+    var url = 'http://localhost/v1/status/b0d6dd58-af1e-4a23-b1ce-7ce5680945db'
 
     fetch(url)
-    .then(function(response) {
+    .then((response) => {
       if (response.status >= 400) {
         throw new Error("Bad response from server");
       }
       return response.json();
     })
-    .then(function(data) {
-      that.setState({ text: data.result.status });
+    .then((data) => {
+      this.setState({ text: data.result.status });
     });
   }
 

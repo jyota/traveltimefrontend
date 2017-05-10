@@ -22,18 +22,28 @@ class CalculatedTimeComponent extends React.Component{
   }
 
   doFetchJobStatus = () => {    
-    var url = 'http://localhost/v1/status/b0d6dd58-af1e-4a23-b1ce-7ce5680945db'
-
-    fetch(url)
-    .then((response) => {
-      if (response.status >= 400) {
-        throw new Error("Bad response from server");
+    var url = 'http://localhost/v1/run_task'
+    var post_data = {"depart_start": "2017-03-02T08:00:00", "depart_end": "2017-03-02T10:00:00", "depart_loc": "Shinjuku, Tokyo", "dest_loc": "Ueno Park, Tokyo", "min_mins_loc": 480, "max_mins_loc": 540, "traffic_model": "pessimistic", "timezone": "Japan"}
+    fetch(url,
+      {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "POST",
+        body: JSON.stringify(post_data)
+      })
+      .then((response) => {
+        if (response.status >= 400) {
+          throw new Error("Bad response from server");
       }
-      return response.json();
-    })
-    .then((data) => {
-      this.setState({ text: data.result.status });
-    });
+      return response.text();
+     })
+      .then((responseText) => {
+        console.log(responseText)
+        this.setState({ text: responseText });
+        
+     });
   }
 
   renderNormal() {

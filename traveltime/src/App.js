@@ -21,9 +21,38 @@ class CalculatedTimeComponent extends React.Component{
     };
   }
 
+  doPollJobStatus = (jobIdentifier) => {
+    var url = 'http://localhost/v1/status/'.concat(jobIdentifier) 
+    fetch(url,
+      {
+        'headers': {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json'
+        },
+        method: "GET"
+      })
+      .then((response) => {
+        if(response.status >= 400) {
+          if(response.status === 502){
+            console.log("502, retrying...");
+            setTimeout(() => { this.doPollJobStatus(jobIdentifier) }, 5000);
+          }
+        }
+        return response.json();
+      })
+      .then((responseJson) => {
+        if(responseJson.status !== 'complete'){
+          this.setState({ text: responseJson.status });
+          setTimeout(() => { this.doPollJobStatus(jobIdentifier) }, 5000);
+        }else{
+          this.setState({ text: responseJson.status });
+        }
+      })
+  }
+
   doFetchJobStatus = () => {    
     var url = 'http://localhost/v1/run_task'
-    var post_data = {"depart_start": "2017-03-02T08:00:00", "depart_end": "2017-03-02T10:00:00", "depart_loc": "Shinjuku, Tokyo", "dest_loc": "Ueno Park, Tokyo", "min_mins_loc": 480, "max_mins_loc": 540, "traffic_model": "pessimistic", "timezone": "Japan"}
+    var post_data = {"depart_start": "2017-05-20T08:00:00", "depart_end": "2017-05-20T10:00:00", "depart_loc": "Shinjuku, Tokyo", "dest_loc": "Ueno Park, Tokyo", "min_mins_loc": 480, "max_mins_loc": 540, "traffic_model": "pessimistic", "timezone": "Japan"}
     fetch(url,
       {
         headers: {
@@ -40,9 +69,7 @@ class CalculatedTimeComponent extends React.Component{
       return response.text();
      })
       .then((responseText) => {
-        console.log(responseText)
-        this.setState({ text: responseText });
-        
+        this.doPollJobStatus(responseText);        
      });
   }
 

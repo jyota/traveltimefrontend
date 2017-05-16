@@ -1,10 +1,19 @@
 import React, { Component } from 'react';
 import './App.css';
+import Datetime from 'react-datetime';
+import './react-datetime.css';
 
 class App extends Component {
   render() {
     return (<div>
       <h2>TravelTime</h2>
+        <table>
+        <tr>
+        <td><p>Starting time at origin: <Datetime className="startTime" /></p></td>
+        <td><p>Arrival time at destination: <Datetime className="endTime" /></p></td>
+        </tr>
+        </table>
+
       <CalculatedTimeComponent/></div>
     );
   }

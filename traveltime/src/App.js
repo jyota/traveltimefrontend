@@ -8,11 +8,11 @@ class App extends Component {
   render() {
     return (<div>
       <h2>TravelTime</h2>
-        <p>Starting time at origin: </p>
       <CalculateTimeFormComponent/></div>
     );
   }
 }
+
 
 export default App;
 
@@ -23,13 +23,18 @@ class CalculateTimeFormComponent extends React.Component{
       originAddress: "16403 25th Ave SE, Bothell, WA 98012",
       destAddress: "2600 116th Ave NE, Bellevue, WA 98004",
       travelTime: 0.0,
-      startTime: new Date(),
+      startTime: moment(),
       numberOfOriginHours: 2,
       numberMinDestHours: 6,
       numberMaxDestHours: 8
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
+    this.doThisMomentFormat = this.doThisMomentFormat.bind(this);
+  }
+
+  doThisMomentFormat(thisMoment){
+    return thisMoment.format("YYYY-MM-DD HH:mm")
   }
 
   handleInputChange(event){
@@ -44,7 +49,7 @@ class CalculateTimeFormComponent extends React.Component{
 
   handleDateInputChange = (dateValue) => {
     this.setState({
-      startTime: dateValue.toDate()
+      startTime: moment(dateValue)
     });
   }
 
@@ -78,9 +83,11 @@ class CalculateTimeFormComponent extends React.Component{
 
   doFetchJobStatus = () => {    
     var url = 'http://localhost/v1/run_task'
+    var departEnd = moment(this.state.startTime);
+    departEnd.add(this.state.numberOfOriginHours, 'hours');
     var post_data = {
-      "depart_start": "2017-05-20T08:00:00", 
-      "depart_end": "2017-05-20T10:00:00", 
+      "depart_start": this.doThisMomentFormat(this.state.startTime), 
+      "depart_end": this.doThisMomentFormat(departEnd), 
       "depart_loc": this.state.originAddress, 
       "dest_loc": this.state.destAddress, 
       "min_mins_loc": this.state.numberMinDestHours * 60, 

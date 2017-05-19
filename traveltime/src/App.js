@@ -69,17 +69,24 @@ class CalculateTimeFormComponent extends React.Component{
       })
       .then((responseJson) => {
         if(responseJson.status !== 'complete'){
-          this.setState({ text: responseJson.status });
           setTimeout(() => { this.doPollJobStatus(jobIdentifier) }, 5000);
         }else{
-          this.setState({ text: responseJson.status });
+          this.setState({ travelTime: responseJson.result.est_travel_time_mins });
         }
       })
   }
 
   doFetchJobStatus = () => {    
     var url = 'http://localhost/v1/run_task'
-    var post_data = {"depart_start": "2017-05-20T08:00:00", "depart_end": "2017-05-20T10:00:00", "depart_loc": "Shinjuku, Tokyo", "dest_loc": "Ueno Park, Tokyo", "min_mins_loc": 480, "max_mins_loc": 540, "traffic_model": "pessimistic", "timezone": "Japan"}
+    var post_data = {
+      "depart_start": "2017-05-20T08:00:00", 
+      "depart_end": "2017-05-20T10:00:00", 
+      "depart_loc": this.state.originAddress, 
+      "dest_loc": this.state.destAddress, 
+      "min_mins_loc": this.state.numberMinDestHours * 60, 
+      "max_mins_loc": this.state.numberMaxDestHours * 60, 
+      "traffic_model": "pessimistic", 
+      "timezone": "America/Los_Angeles"}
     fetch(url,
       {
         headers: {
@@ -159,8 +166,8 @@ class CalculateTimeFormComponent extends React.Component{
             onChange={this.handleInputChange} />
         </label>
         <br/>
-        <button onClick={this.doFetchJobStatus}>Calculate</button>
       </form>
+        <button onClick={this.doFetchJobStatus}>Calculate</button>
         <p><b>Calculated time: </b> {this.state.travelTime}</p>
         
     </div>

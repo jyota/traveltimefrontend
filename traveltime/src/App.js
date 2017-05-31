@@ -22,6 +22,8 @@ class CalculateTimeFormComponent extends React.Component{
     this.state = {
       originAddress: "16403 25th Ave SE, Bothell, WA 98012",
       destAddress: "2600 116th Ave NE, Bellevue, WA 98004",
+      origToDestSummary: "",
+      destToOrigSummary: "",
       travelTime: 0.0,
       startTime: moment(),
       numberOfOriginHours: 2,
@@ -76,7 +78,11 @@ class CalculateTimeFormComponent extends React.Component{
         if(responseJson.status !== 'complete'){
           setTimeout(() => { this.doPollJobStatus(jobIdentifier) }, 5000);
         }else{
-          this.setState({ travelTime: responseJson.result.est_travel_time_mins });
+          this.setState({ 
+            travelTime: responseJson.result.est_travel_time_mins,
+            origToDestSummary: responseJson.result.orig_to_dest_summary,
+            destToOrigSummary: responseJson.result.dest_to_orig_summary
+           });
         }
       })
   }
@@ -107,10 +113,14 @@ class CalculateTimeFormComponent extends React.Component{
         if (response.status >= 400) {
           throw new Error("Bad response from server");
       }
-      return response.text();
+      return response.json();
      })
-      .then((responseText) => {
-        this.doPollJobStatus(responseText);        
+      .then((responseJson) => {
+        if(responseJson['job_id']){
+          this.doPollJobStatus(responseJson['job_id']);
+        }else{
+          throw new Error("Empty job_id returned from job submission endpoint")
+        }        
      });
   }
 
@@ -175,7 +185,9 @@ class CalculateTimeFormComponent extends React.Component{
         <br/>
       </form>
         <button onClick={this.doFetchJobStatus}>Calculate</button>
-        <p><b>Calculated time: </b> {this.state.travelTime}</p>
+        <p><b>Calculated time: </b> {this.state.travelTime}<br/>
+        <b>Origin to destination route summary: </b> {this.state.origToDestSummary}<br/>
+        <b>Destination to origin route summary: </b> {this.state.destToOrigSummary}</p>
         
     </div>
     )

@@ -24,6 +24,9 @@ class CalculateTimeFormComponent extends React.Component{
       destAddress: "2600 116th Ave NE, Bellevue, WA 98004",
       origToDestSummary: "",
       destToOrigSummary: "",
+      origToDestTimeToLeave: "",
+      destToOrigTimeToLeave: "",
+      timeZone: "",
       travelTime: 0.0,
       startTime: moment(),
       numberOfOriginHours: 2,
@@ -81,7 +84,10 @@ class CalculateTimeFormComponent extends React.Component{
           this.setState({ 
             travelTime: responseJson.result.est_travel_time_mins,
             origToDestSummary: responseJson.result.orig_to_dest_summary,
-            destToOrigSummary: responseJson.result.dest_to_orig_summary
+            destToOrigSummary: responseJson.result.dest_to_orig_summary,
+            origToDestTimeToLeave: moment(responseJson.result.orig_to_dest).format("MM/DD/YYYY hh:mm A"),
+            destToOrigTimeToLeave: moment(responseJson.result.dest_to_orig).format("MM/DD/YYYY hh:mm A"),
+            timeZone: responseJson.result.requested.tz_in
            });
         }
       })
@@ -185,7 +191,11 @@ class CalculateTimeFormComponent extends React.Component{
         <br/>
       </form>
         <button onClick={this.doFetchJobStatus}>Calculate</button>
-        <p><b>Calculated time: </b> {Math.round(this.state.travelTime)} minutes<br/>
+        <p>
+        <b>Timezone: </b> {this.state.timeZone}<br/>
+        <b>Time to leave origin: </b> {this.state.origToDestTimeToLeave}<br/>
+        <b>Time to leave destination: </b> {this.state.destToOrigTimeToLeave}<br/>
+        <b>Estimated roundtrip travel time: </b> {Math.round(this.state.travelTime)} minutes<br/>
         <b>Origin to destination route summary: </b> {this.state.origToDestSummary}<br/>
         <b>Destination to origin route summary: </b> {this.state.destToOrigSummary}</p>
         

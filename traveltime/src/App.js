@@ -185,7 +185,7 @@ class CalculateTimeFormComponent extends React.Component{
         <br/>
       </form>
         <button onClick={this.doFetchJobStatus}>Calculate</button>
-        <p><b>Calculated time: </b> {this.state.travelTime}<br/>
+        <p><b>Calculated time: </b> {Math.round(this.state.travelTime)} minutes<br/>
         <b>Origin to destination route summary: </b> {this.state.origToDestSummary}<br/>
         <b>Destination to origin route summary: </b> {this.state.destToOrigSummary}</p>
         

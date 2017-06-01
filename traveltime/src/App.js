@@ -2,6 +2,8 @@ import React, { Component } from 'react';
 import './App.css';
 import Datetime from 'react-datetime';
 import './react-datetime.css';
+import PlacesAutocomplete from 'react-places-autocomplete'
+
 var moment = require('moment');
 
 class App extends Component {
@@ -20,8 +22,8 @@ class CalculateTimeFormComponent extends React.Component{
   constructor(){
     super();
     this.state = {
-      originAddress: "16403 25th Ave SE, Bothell, WA 98012",
-      destAddress: "2600 116th Ave NE, Bellevue, WA 98004",
+      originAddress: "",
+      destAddress: "",
       origToDestSummary: "",
       destToOrigSummary: "",
       origToDestTimeToLeave: "",
@@ -36,6 +38,8 @@ class CalculateTimeFormComponent extends React.Component{
 
     this.handleInputChange = this.handleInputChange.bind(this);
     this.doThisMomentFormat = this.doThisMomentFormat.bind(this);
+    this.originChange = (address) => this.setState({ originAddress: address });
+    this.destChange = (address) => this.setState({ destAddress: address });
   }
 
   doThisMomentFormat(thisMoment){
@@ -131,27 +135,34 @@ class CalculateTimeFormComponent extends React.Component{
   }
 
   renderNormal() {
+    const originInputProps = {
+      value: this.state.originAddress,
+      onChange: this.originChange
+    }
+
+    const destInputProps = {
+      value: this.state.destAddress,
+      onChange: this.destChange
+    }
+
+    const addrStyles = { root: { position: 'relative', zIndex: 999},
+                         input: { width: '50%' }};
+    const addrStylesNext = { root: { position: 'relative', zIndex: 998},
+                         input: { width: '50%' }};
+
+    const AutocompleteItem = ({ suggestion }) => (<div><i className="fa fa-map-marker"/>{suggestion}</div>);
+
     return (
       <div>
       <form>
         <label>
           Origin address:
-          <input
-            name="originAddress"
-            type="text"
-            size="100"
-            value={this.state.originAddress}
-            onChange={this.handleInputChange} />
+          <PlacesAutocomplete inputProps={originInputProps} styles={addrStyles} autocompleteItem={AutocompleteItem} />
         </label>
         <br/>
         <label>
           Destination address:
-          <input
-            name="destAddress"
-            type="text"
-            size="100"
-            value={this.state.destAddress}
-            onChange={this.handleInputChange} />
+          <PlacesAutocomplete inputProps={destInputProps} styles={addrStylesNext} autocompleteItem={AutocompleteItem} />
         </label>
         <br/>
         <label>

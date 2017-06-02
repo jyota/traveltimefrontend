@@ -31,6 +31,7 @@ class CalculateTimeFormComponent extends React.Component{
       destToOrigTimeToLeave: "",
       timeZone: "",
       travelTime: 0.0,
+      trafficModel: "best_guess",
       startTime: moment(),
       numberOfOriginHours: 2,
       numberMinDestHours: 6,
@@ -139,7 +140,7 @@ class CalculateTimeFormComponent extends React.Component{
         "dest_loc": this.state.destAddress, 
         "min_mins_loc": this.state.numberMinDestHours * 60, 
         "max_mins_loc": this.state.numberMaxDestHours * 60, 
-        "traffic_model": "pessimistic", 
+        "traffic_model": this.state.trafficModel, 
         "timezone": "America/Los_Angeles"}
 
       fetch(url,
@@ -239,6 +240,14 @@ class CalculateTimeFormComponent extends React.Component{
             onChange={this.handleInputChange} />
         </label>
         <br/>
+        <label>
+          Traffic model:
+          <select name="trafficModel" value={this.state.trafficModel} onChange={this.handleInputChange}>
+            <option value="best_guess">Best guess</option>
+            <option value="optimistic">Optimistic</option>
+            <option value="pessimistic">Pessimistic</option>
+          </select>
+        </label>
       </form>
         <button onClick={this.doFetchJobStatus}>Calculate</button>
         <p>

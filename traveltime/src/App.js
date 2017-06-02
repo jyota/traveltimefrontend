@@ -33,7 +33,8 @@ class CalculateTimeFormComponent extends React.Component{
       startTime: moment(),
       numberOfOriginHours: 2,
       numberMinDestHours: 6,
-      numberMaxDestHours: 8
+      numberMaxDestHours: 8,
+      jobStatus: "waiting_for_job"
     };
 
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -82,7 +83,10 @@ class CalculateTimeFormComponent extends React.Component{
         return response.json();
       })
       .then((responseJson) => {
-        if(responseJson.status !== 'complete'){
+        if(responseJson.status.indexOf('error') !== -1){
+          this.setState({jobStatus: responseJson.status});
+        }else if(responseJson.status !== 'complete'){
+          this.setState({jobStatus: responseJson.status});
           setTimeout(() => { this.doPollJobStatus(jobIdentifier) }, 5000);
         }else{
           this.setState({ 
@@ -91,47 +95,52 @@ class CalculateTimeFormComponent extends React.Component{
             destToOrigSummary: responseJson.result.dest_to_orig_summary,
             origToDestTimeToLeave: moment(responseJson.result.orig_to_dest).format("MM/DD/YYYY hh:mm A"),
             destToOrigTimeToLeave: moment(responseJson.result.dest_to_orig).format("MM/DD/YYYY hh:mm A"),
-            timeZone: responseJson.result.requested.tz_in
+            timeZone: responseJson.result.requested.tz_in,
+            jobStatus: "complete"
            });
         }
       })
   }
 
   doFetchJobStatus = () => {    
-    var url = 'http://localhost/v1/run_task'
-    var departEnd = moment(this.state.startTime);
-    departEnd.add(this.state.numberOfOriginHours, 'hours');
-    var post_data = {
-      "depart_start": this.doThisMomentFormat(this.state.startTime), 
-      "depart_end": this.doThisMomentFormat(departEnd), 
-      "depart_loc": this.state.originAddress, 
-      "dest_loc": this.state.destAddress, 
-      "min_mins_loc": this.state.numberMinDestHours * 60, 
-      "max_mins_loc": this.state.numberMaxDestHours * 60, 
-      "traffic_model": "pessimistic", 
-      "timezone": "America/Los_Angeles"}
-    fetch(url,
-      {
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json'
-        },
-        method: "POST",
-        body: JSON.stringify(post_data)
-      })
-      .then((response) => {
-        if (response.status >= 400) {
-          throw new Error("Bad response from server");
-      }
-      return response.json();
-     })
-      .then((responseJson) => {
-        if(responseJson['job_id']){
-          this.doPollJobStatus(responseJson['job_id']);
-        }else{
-          throw new Error("Empty job_id returned from job submission endpoint")
-        }        
-     });
+    if(this.state.jobStatus === 'waiting_for_job'){
+      var url = 'http://localhost/v1/run_task'
+      var departEnd = moment(this.state.startTime);
+      departEnd.add(this.state.numberOfOriginHours, 'hours');
+      var post_data = {
+        "depart_start": this.doThisMomentFormat(this.state.startTime), 
+        "depart_end": this.doThisMomentFormat(departEnd), 
+        "depart_loc": this.state.originAddress, 
+        "dest_loc": this.state.destAddress, 
+        "min_mins_loc": this.state.numberMinDestHours * 60, 
+        "max_mins_loc": this.state.numberMaxDestHours * 60, 
+        "traffic_model": "pessimistic", 
+        "timezone": "America/Los_Angeles"}
+
+      fetch(url,
+        {
+          headers: {
+            'Accept': 'application/json',
+            'Content-Type': 'application/json'
+          },
+          method: "POST",
+          body: JSON.stringify(post_data)
+        })
+        .then((response) => {
+          if (response.status >= 400) {
+            throw new Error("Bad response from server");
+        }
+        return response.json();
+       })
+        .then((responseJson) => {
+          if(responseJson['job_id']){
+            this.doPollJobStatus(responseJson['job_id']);
+          }else{
+            this.setState({jobStatus: responseJson['status']});
+            throw new Error("Empty job_id returned from job submission endpoint")
+          }
+       });
+    }
   }
 
   renderNormal() {
@@ -203,6 +212,7 @@ class CalculateTimeFormComponent extends React.Component{
       </form>
         <button onClick={this.doFetchJobStatus}>Calculate</button>
         <p>
+        <b>Job status: </b> {this.state.jobStatus}<br/>
         <b>Timezone: </b> {this.state.timeZone}<br/>
         <b>Time to leave origin: </b> {this.state.origToDestTimeToLeave}<br/>
         <b>Time to leave destination: </b> {this.state.destToOrigTimeToLeave}<br/>

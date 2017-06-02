@@ -3,6 +3,7 @@ import './App.css';
 import Datetime from 'react-datetime';
 import './react-datetime.css';
 import PlacesAutocomplete from 'react-places-autocomplete'
+import AlertContainer from 'react-alert'
 
 var moment = require('moment');
 
@@ -36,6 +37,26 @@ class CalculateTimeFormComponent extends React.Component{
       numberMaxDestHours: 8,
       jobStatus: "waiting_for_job"
     };
+
+    this.alertOptions = {
+      offset: 14,
+      position: 'top left',
+      theme: 'light',
+      time: 5000,
+      transition: 'scale'
+    };
+ 
+    this.showErrorAlert = () => {
+      var errorText = "Error: Unknown error with request.";
+      if(this.state.jobStatus === 'api_error_departure_in_the_past'){
+        errorText = "Error: departure time cannot be in the past";
+      } else if(this.state.jobStatus === 'api_error_unknown'){
+        errorText = "Error: Google maps API error. Quota may be maxed for the day. Try back again later.";
+      } else if(['error_input_structure_validation', 'error_diff_mins_negative', 'error_diff_mins_more_than_4hrs'].indexOf(this.state.jobStatus) > -1){
+        errorText = "Error: Invalid request input data." 
+      };
+      this.msg.error(errorText);
+    }
 
     this.handleInputChange = this.handleInputChange.bind(this);
     this.doThisMomentFormat = this.doThisMomentFormat.bind(this);
@@ -76,8 +97,10 @@ class CalculateTimeFormComponent extends React.Component{
       .then((response) => {
         if(response.status >= 400) {
           if(response.status === 502){
-            console.log("502, retrying...");
             setTimeout(() => { this.doPollJobStatus(jobIdentifier) }, 5000);
+          }else{
+            this.showErrorAlert();
+            this.setState({jobStatus: "waiting_for_job"});
           }
         }
         return response.json();
@@ -85,6 +108,8 @@ class CalculateTimeFormComponent extends React.Component{
       .then((responseJson) => {
         if(responseJson.status.indexOf('error') !== -1){
           this.setState({jobStatus: responseJson.status});
+          this.showErrorAlert();
+          this.setState({jobStatus: "waiting_for_job"});
         }else if(responseJson.status !== 'complete'){
           this.setState({jobStatus: responseJson.status});
           setTimeout(() => { this.doPollJobStatus(jobIdentifier) }, 5000);
@@ -96,7 +121,7 @@ class CalculateTimeFormComponent extends React.Component{
             origToDestTimeToLeave: moment(responseJson.result.orig_to_dest).format("MM/DD/YYYY hh:mm A"),
             destToOrigTimeToLeave: moment(responseJson.result.dest_to_orig).format("MM/DD/YYYY hh:mm A"),
             timeZone: responseJson.result.requested.tz_in,
-            jobStatus: "complete"
+            jobStatus: "waiting_for_job"
            });
         }
       })
@@ -128,6 +153,8 @@ class CalculateTimeFormComponent extends React.Component{
         })
         .then((response) => {
           if (response.status >= 400) {
+            this.showErrorAlert();
+            this.setState({jobStatus: "waiting_for_job"});
             throw new Error("Bad response from server");
         }
         return response.json();
@@ -137,6 +164,8 @@ class CalculateTimeFormComponent extends React.Component{
             this.doPollJobStatus(responseJson['job_id']);
           }else{
             this.setState({jobStatus: responseJson['status']});
+            this.showErrorAlert();
+            this.setState({jobStatus: "waiting_for_job"});
             throw new Error("Empty job_id returned from job submission endpoint")
           }
        });
@@ -163,6 +192,7 @@ class CalculateTimeFormComponent extends React.Component{
 
     return (
       <div>
+      <AlertContainer ref={a => this.msg = a} {...this.alertOptions} />
       <form>
         <label>
           Origin address:

@@ -56,7 +56,9 @@ class CalculateTimeFormComponent extends React.Component{
       } else if(this.state.jobStatus === 'error_time_span'){
         errorText = "Error: Time span of origin begin/end and destination begin/end cannot exceed 8 hours";
       } else if(this.state.jobStatus === 'error_input_structure_validation'){
-        errorText = "Error: Invalid request input data." 
+        errorText = "Error: Invalid request input data." ;
+      } else if(this.state.jobStatus === 'api_error_timezonelookup'){
+        errorText = "Error: Could not get timezone from Google API for start location.";
       };
       this.msg.error(errorText);
     }
@@ -123,7 +125,7 @@ class CalculateTimeFormComponent extends React.Component{
             destToOrigSummary: responseJson.result.dest_to_orig_summary,
             origToDestTimeToLeave: moment(responseJson.result.orig_to_dest).format("MM/DD/YYYY hh:mm A"),
             destToOrigTimeToLeave: moment(responseJson.result.dest_to_orig).format("MM/DD/YYYY hh:mm A"),
-            timeZone: responseJson.result.requested.tz_in,
+            timeZone: responseJson.result.requested.tz_in.timeZoneName,
             jobStatus: "waiting_for_job"
            });
         }
@@ -142,8 +144,7 @@ class CalculateTimeFormComponent extends React.Component{
         "dest_loc": this.state.destAddress, 
         "min_mins_loc": this.state.numberMinDestHours * 60, 
         "max_mins_loc": this.state.numberMaxDestHours * 60, 
-        "traffic_model": this.state.trafficModel, 
-        "timezone": "America/Los_Angeles"}
+        "traffic_model": this.state.trafficModel}
 
       fetch(url,
         {

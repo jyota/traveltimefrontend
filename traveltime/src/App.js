@@ -53,7 +53,9 @@ class CalculateTimeFormComponent extends React.Component{
         errorText = "Error: departure time cannot be in the past";
       } else if(this.state.jobStatus === 'api_error_unknown'){
         errorText = "Error: Google maps API error. Quota may be maxed for the day. Try back again later.";
-      } else if(['error_input_structure_validation', 'error_diff_mins_negative', 'error_diff_mins_more_than_4hrs'].indexOf(this.state.jobStatus) > -1){
+      } else if(this.state.jobStatus === 'error_time_span'){
+        errorText = "Error: Time span of origin begin/end and destination begin/end cannot exceed 8 hours";
+      } else if(this.state.jobStatus === 'error_input_structure_validation'){
         errorText = "Error: Invalid request input data." 
       };
       this.msg.error(errorText);

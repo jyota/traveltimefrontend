@@ -61,7 +61,7 @@ class CalculateTimeFormComponent extends React.Component{
       } else if(this.state.jobStatus === 'api_error_unknown'){
         errorText = "Error: Google maps API error. Quota may be maxed for the day. Try back again later.";
       } else if(this.state.jobStatus === 'error_time_span'){
-        errorText = "Error: Time span of origin begin/end and destination begin/end cannot exceed 8 hours";
+        errorText = "Error: Time span of origin begin/end and destination begin/end cannot exceed 8 hours, and origin/destination time spans cannot be less than zero.";
       } else if(this.state.jobStatus === 'error_input_structure_validation'){
         errorText = "Error: Invalid request input data." ;
       } else if(this.state.jobStatus === 'api_error_timezonelookup'){

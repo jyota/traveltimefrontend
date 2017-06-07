@@ -12,8 +12,12 @@ class App extends Component {
   render() {
     return (<div>
       <h2>TravelTime</h2>
+      Have a flexible schedule? Minimize your time spent in the car going and coming back from somewhere with this calculator. 
+      <br/><br/><br/>
+      <CalculateTimeFormComponent/>
       <br/><br/>
-      <CalculateTimeFormComponent/></div>
+      Copyright 2017 <a href="mailto:minor@integrated.pro">Jyota Snyder</a>.<br/>
+      By using this app you agree to <a href="license.html">its license</a>.</div>
     );
   }
 }
@@ -232,6 +236,7 @@ class CalculateTimeFormComponent extends React.Component{
         </Col>
         <Col sm={10}>
         <Datetime 
+         input={false}
          inputProps={{name: "startTime"}}
          value={this.state.startTime} 
          onChange={this.handleDateInputChange} />
@@ -302,8 +307,8 @@ class CalculateTimeFormComponent extends React.Component{
           </Modal.Header>
           <Modal.Body>
             <b>Timezone: </b> {this.state.timeZone}<br/>
-            <b>Best time to leave origin: </b> {this.state.origToDestTimeToLeave}<br/>
-            <b>Best time to leave destination: </b> {this.state.destToOrigTimeToLeave}<br/>
+            <b>Best time to leave from origin: </b> {this.state.origToDestTimeToLeave}<br/>
+            <b>Best time to return from destination: </b> {this.state.destToOrigTimeToLeave}<br/>
             <b>Estimated roundtrip travel time: </b> {Math.round(this.state.travelTime)} minutes<br/>
             <b>Origin to destination route: </b> {this.state.origToDestSummary}<br/>
             <b>Destination to origin route: </b> {this.state.destToOrigSummary}<br/>

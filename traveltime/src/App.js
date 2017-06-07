@@ -2,8 +2,9 @@ import React, { Component } from 'react';
 import './App.css';
 import Datetime from 'react-datetime';
 import './react-datetime.css';
-import PlacesAutocomplete from 'react-places-autocomplete'
-import AlertContainer from 'react-alert'
+import PlacesAutocomplete from 'react-places-autocomplete';
+import AlertContainer from 'react-alert';
+import { Button, Col, FormControl, FormGroup, Form, Modal } from 'react-bootstrap';
 
 var moment = require('moment');
 
@@ -11,6 +12,7 @@ class App extends Component {
   render() {
     return (<div>
       <h2>TravelTime</h2>
+      <br/><br/>
       <CalculateTimeFormComponent/></div>
     );
   }
@@ -36,7 +38,8 @@ class CalculateTimeFormComponent extends React.Component{
       numberOfOriginHours: 2,
       numberMinDestHours: 6,
       numberMaxDestHours: 8,
-      jobStatus: "waiting_for_job"
+      jobStatus: "waiting_for_job",
+      showResultModal: false
     };
 
     this.alertOptions = {
@@ -67,6 +70,14 @@ class CalculateTimeFormComponent extends React.Component{
     this.doThisMomentFormat = this.doThisMomentFormat.bind(this);
     this.originChange = (address) => this.setState({ originAddress: address });
     this.destChange = (address) => this.setState({ destAddress: address });
+  }
+
+  closeResultModal = () => {
+    this.setState({ showResultModal: false })
+  }
+
+  openResultModal = () => {
+    this.setState({ showResultModal: true })
   }
 
   doThisMomentFormat(thisMoment){
@@ -128,6 +139,7 @@ class CalculateTimeFormComponent extends React.Component{
             timeZone: responseJson.result.requested.tz_in.timeZoneName,
             jobStatus: "waiting_for_job"
            });
+          this.openResultModal();
         }
       })
   }
@@ -188,80 +200,118 @@ class CalculateTimeFormComponent extends React.Component{
     }
 
     const addrStyles = { root: { position: 'relative', zIndex: 999},
-                         input: { width: '50%' }};
+                         input: { width: '350px' }};
     const addrStylesNext = { root: { position: 'relative', zIndex: 998},
-                         input: { width: '50%' }};
+                         input: { width: '350px' }};
 
     const AutocompleteItem = ({ suggestion }) => (<div><i className="fa fa-map-marker"/>{suggestion}</div>);
 
     return (
       <div>
       <AlertContainer ref={a => this.msg = a} {...this.alertOptions} />
-      <form>
-        <label>
-          Origin address:
+      <Form horizontal>
+       <FormGroup controlId="formHorizontalOriginAddr">
+        <Col className="col-md-2 text-right" sm={2}>
+          <b>Origin address</b>
+        </Col>
+        <Col sm={10}>
           <PlacesAutocomplete inputProps={originInputProps} styles={addrStyles} autocompleteItem={AutocompleteItem} />
-        </label>
-        <br/>
-        <label>
-          Destination address:
+        </Col>
+       </FormGroup>
+       <FormGroup controlId="formHorizontalDestAddr">
+        <Col className="col-md-2 text-right" sm={2}>
+          <b>Destination address</b>
+        </Col>
+        <Col sm={10}>
           <PlacesAutocomplete inputProps={destInputProps} styles={addrStylesNext} autocompleteItem={AutocompleteItem} />
-        </label>
-        <br/>
-        <label>
-        Earliest time to leave origin:
+        </Col>
+       </FormGroup>
+       <FormGroup controlId="formHorizontalTTL">
+        <Col className="col-md-2 text-right" sm={2}>
+          <b>Min. time to leave origin</b>
+        </Col>
+        <Col sm={10}>
         <Datetime 
          inputProps={{name: "startTime"}}
          value={this.state.startTime} 
          onChange={this.handleDateInputChange} />
-        </label>
-        <br/>
-        <label>
-          Number of hours beyond start that can leave:
+        </Col>
+       </FormGroup>
+       <FormGroup controlId="formHorizontalOriginFlex">
+        <Col className="col-md-2 text-right" sm={2}>
+          <b>Max. hours at origin</b>
+        </Col>
+        <Col sm={10}>
           <input
             name="numberOfOriginHours"
             type="number"
             value={this.state.numberOfOriginHours}
             onChange={this.handleInputChange} />
-        </label>
-        <br/>
-        <label>
-          Minimum hours at destination:
+        </Col>
+        </FormGroup>
+        <FormGroup controlId="formHorizontalMinDestHrs">
+        <Col className="col-md-2 text-right" sm={2}>
+          <b>Min. hours at destination</b>
+        </Col>
+        <Col sm={10}>
           <input
             name="numberMinDestHours"
             type="number"
             value={this.state.numberMinDestHours}
             onChange={this.handleInputChange} />
-        </label>
-        <br/>
-        <label>
-          Maximum hours at destination:
+        </Col>
+        </FormGroup>
+        <FormGroup controlId="formHorizontalMaxDestHours">
+        <Col className="col-md-2 text-right" sm={2}>
+          <b>Max. hours at destination</b>
+        </Col>
+        <Col sm={10}>
           <input
             name="numberMaxDestHours"
             type="number"
             value={this.state.numberMaxDestHours}
             onChange={this.handleInputChange} />
-        </label>
-        <br/>
-        <label>
-          Traffic model:
-          <select name="trafficModel" value={this.state.trafficModel} onChange={this.handleInputChange}>
+        </Col>
+        </FormGroup>
+        <FormGroup controlId="formHorizontalTrafficModel">
+        <Col className="col-md-2 text-right" sm={2}>
+          <b>Traffic model</b>
+        </Col>
+        <Col sm={10}>
+          <FormControl style={{width: '150px'}} componentClass="select" placeholder="best_guess" name="trafficModel" value={this.state.trafficModel} onChange={this.handleInputChange}>
             <option value="best_guess">Best guess</option>
             <option value="optimistic">Optimistic</option>
             <option value="pessimistic">Pessimistic</option>
-          </select>
-        </label>
-      </form>
-        <button onClick={this.doFetchJobStatus}>Calculate</button>
-        <p>
-        <b>Job status: </b> {this.state.jobStatus}<br/>
-        <b>Timezone: </b> {this.state.timeZone}<br/>
-        <b>Time to leave origin: </b> {this.state.origToDestTimeToLeave}<br/>
-        <b>Time to leave destination: </b> {this.state.destToOrigTimeToLeave}<br/>
-        <b>Estimated roundtrip travel time: </b> {Math.round(this.state.travelTime)} minutes<br/>
-        <b>Origin to destination route summary: </b> {this.state.origToDestSummary}<br/>
-        <b>Destination to origin route summary: </b> {this.state.destToOrigSummary}</p>
-        
+          </FormControl>
+        </Col>
+        </FormGroup>
+        <FormGroup controlId="formHorizontalSubmission">
+        <Col smOffset={2} sm={10}>
+        <Button 
+             bsStyle="primary" 
+             disabled={this.state.jobStatus !== "waiting_for_job"}
+             onClick={this.state.jobStatus === "waiting_for_job" ? this.doFetchJobStatus : null}>
+          {this.state.jobStatus === "waiting_for_job" ? "Run calculation" : "Running..."}
+        </Button>
+        </Col>
+        </FormGroup>
+      </Form>
+      <Modal show={this.state.showResultModal} onHide={this.closeResultModal}>
+          <Modal.Header closeButton>
+            <Modal.Title>Calculated results</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <b>Timezone: </b> {this.state.timeZone}<br/>
+            <b>Best time to leave origin: </b> {this.state.origToDestTimeToLeave}<br/>
+            <b>Best time to leave destination: </b> {this.state.destToOrigTimeToLeave}<br/>
+            <b>Estimated roundtrip travel time: </b> {Math.round(this.state.travelTime)} minutes<br/>
+            <b>Origin to destination route: </b> {this.state.origToDestSummary}<br/>
+            <b>Destination to origin route: </b> {this.state.destToOrigSummary}<br/>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button onClick={this.closeResultModal}>Close</Button>
+          </Modal.Footer>
+        </Modal>        
     </div>
     )
   }

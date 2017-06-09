@@ -105,7 +105,7 @@ class CalculateTimeFormComponent extends React.Component{
   }
 
   doPollJobStatus = (jobIdentifier) => {
-    var url = 'http://localhost/v1/status/'.concat(jobIdentifier) 
+    var url = 'http://traveltime-jobservice.integrated.pro/v1/status/'.concat(jobIdentifier) 
     fetch(url,
       {
         'headers': {
@@ -150,7 +150,7 @@ class CalculateTimeFormComponent extends React.Component{
 
   doFetchJobStatus = () => {    
     if(this.state.jobStatus === 'waiting_for_job'){
-      var url = 'http://localhost/v1/run_task'
+      var url = 'http://traveltime-jobservice.integrated.pro/v1/run_task'
       var departEnd = moment(this.state.startTime);
       departEnd.add(this.state.numberOfOriginHours, 'hours');
       var post_data = {

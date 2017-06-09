@@ -215,26 +215,26 @@ class CalculateTimeFormComponent extends React.Component{
       <AlertContainer ref={a => this.msg = a} {...this.alertOptions} />
       <Form horizontal>
        <FormGroup controlId="formHorizontalOriginAddr">
-        <Col className="col-md-2 text-right" sm={2}>
+        <Col className="text-right" xs={4} md={2}>
           <b>Origin address</b>
         </Col>
-        <Col sm={10}>
+        <Col xs={8} md={10}>
           <PlacesAutocomplete inputProps={originInputProps} styles={addrStyles} autocompleteItem={AutocompleteItem} />
         </Col>
        </FormGroup>
        <FormGroup controlId="formHorizontalDestAddr">
-        <Col className="col-md-2 text-right" sm={2}>
+        <Col className="text-right" xs={4} md={2}>
           <b>Destination address</b>
         </Col>
-        <Col sm={10}>
+        <Col xs={8} md={10}>
           <PlacesAutocomplete inputProps={destInputProps} styles={addrStylesNext} autocompleteItem={AutocompleteItem} />
         </Col>
        </FormGroup>
        <FormGroup controlId="formHorizontalTTL">
-        <Col className="col-md-2 text-right" sm={2}>
+        <Col className="text-right" xs={4} md={2}>
           <b>Min. time to leave origin</b>
         </Col>
-        <Col sm={10}>
+        <Col xs={8} md={10}>
         <Datetime 
          input={false}
          inputProps={{name: "startTime"}}
@@ -243,10 +243,11 @@ class CalculateTimeFormComponent extends React.Component{
         </Col>
        </FormGroup>
        <FormGroup controlId="formHorizontalOriginFlex">
-        <Col className="col-md-2 text-right" sm={2}>
+        <Col className="text-right" xs={4} md={2}>
           <b>Max. hours at origin</b>
+        }
         </Col>
-        <Col sm={10}>
+        <Col xs={8} md={10}>
           <input
             name="numberOfOriginHours"
             type="number"
@@ -255,10 +256,10 @@ class CalculateTimeFormComponent extends React.Component{
         </Col>
         </FormGroup>
         <FormGroup controlId="formHorizontalMinDestHrs">
-        <Col className="col-md-2 text-right" sm={2}>
+        <Col className="text-right" xs={4} md={2}>
           <b>Min. hours at destination</b>
         </Col>
-        <Col sm={10}>
+        <Col xs={8} md={10}>
           <input
             name="numberMinDestHours"
             type="number"
@@ -267,10 +268,10 @@ class CalculateTimeFormComponent extends React.Component{
         </Col>
         </FormGroup>
         <FormGroup controlId="formHorizontalMaxDestHours">
-        <Col className="col-md-2 text-right" sm={2}>
+        <Col className="text-right" xs={4} md={2}>
           <b>Max. hours at destination</b>
         </Col>
-        <Col sm={10}>
+        <Col xs={8} md={10}>
           <input
             name="numberMaxDestHours"
             type="number"
@@ -279,10 +280,10 @@ class CalculateTimeFormComponent extends React.Component{
         </Col>
         </FormGroup>
         <FormGroup controlId="formHorizontalTrafficModel">
-        <Col className="col-md-2 text-right" sm={2}>
+        <Col className="text-right" xs={4} md={2}>
           <b>Traffic model</b>
         </Col>
-        <Col sm={10}>
+        <Col xs={8} md={10}>
           <FormControl style={{width: '150px'}} componentClass="select" placeholder="best_guess" name="trafficModel" value={this.state.trafficModel} onChange={this.handleInputChange}>
             <option value="best_guess">Best guess</option>
             <option value="optimistic">Optimistic</option>
@@ -291,7 +292,7 @@ class CalculateTimeFormComponent extends React.Component{
         </Col>
         </FormGroup>
         <FormGroup controlId="formHorizontalSubmission">
-        <Col smOffset={2} sm={10}>
+        <Col xsOffset={4} xs={4} md={2} mdOffset={2}>
         <Button 
              bsStyle="primary" 
              disabled={this.state.jobStatus !== "waiting_for_job"}

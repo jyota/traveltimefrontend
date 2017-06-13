@@ -37,6 +37,8 @@ class CalculateTimeFormComponent extends React.Component{
       destToOrigTimeToLeave: "",
       timeZone: "",
       travelTime: 0.0,
+      origToDestTime: "",
+      destToOrigTime: "",
       trafficModel: "best_guess",
       startTime: moment(),
       numberOfOriginHours: 2,
@@ -136,6 +138,8 @@ class CalculateTimeFormComponent extends React.Component{
         }else{
           this.setState({ 
             travelTime: responseJson.result.est_travel_time_mins,
+            origToDestTime: moment(responseJson.result.orig_to_dest).add(responseJson.result.dest_to_orig_time, 'minutes').format("MM/DD/YYYY hh:mm A"),
+            destToOrigTime: moment(responseJson.result.dest_to_orig).add(responseJson.result.orig_to_dest_time, 'minutes').format("MM/DD/YYYY hh:mm A"),
             origToDestSummary: responseJson.result.orig_to_dest_summary,
             destToOrigSummary: responseJson.result.dest_to_orig_summary,
             origToDestTimeToLeave: moment(responseJson.result.orig_to_dest).format("MM/DD/YYYY hh:mm A"),
@@ -232,7 +236,7 @@ class CalculateTimeFormComponent extends React.Component{
        </FormGroup>
        <FormGroup controlId="formHorizontalTTL">
         <Col className="text-right" xs={4} md={2}>
-          <b>Min. time to leave origin</b>
+          <b>Earliest time to leave origin</b>
         </Col>
         <Col xs={8} md={10}>
         <Datetime 
@@ -244,8 +248,7 @@ class CalculateTimeFormComponent extends React.Component{
        </FormGroup>
        <FormGroup controlId="formHorizontalOriginFlex">
         <Col className="text-right" xs={4} md={2}>
-          <b>Max. hours at origin</b>
-        }
+          <b>Latest hours to leave after earliest time</b>
         </Col>
         <Col xs={8} md={10}>
           <input
@@ -312,7 +315,9 @@ class CalculateTimeFormComponent extends React.Component{
             <b>Best time to return from destination: </b> {this.state.destToOrigTimeToLeave}<br/>
             <b>Estimated roundtrip travel time: </b> {Math.round(this.state.travelTime)} minutes<br/>
             <b>Origin to destination route: </b> {this.state.origToDestSummary}<br/>
+            <b>Estimated arrival at destination: </b> {this.state.origToDestTime}<br/> 
             <b>Destination to origin route: </b> {this.state.destToOrigSummary}<br/>
+            <b>Estimated return arrival at origin: </b> {this.state.destToOrigTime}<br/>
           </Modal.Body>
           <Modal.Footer>
             <Button onClick={this.closeResultModal}>Close</Button>

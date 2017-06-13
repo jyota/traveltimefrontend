@@ -137,9 +137,9 @@ class CalculateTimeFormComponent extends React.Component{
           setTimeout(() => { this.doPollJobStatus(jobIdentifier) }, 5000);
         }else{
           this.setState({ 
-            travelTime: responseJson.result.est_travel_time_mins,
-            origToDestTime: moment(responseJson.result.orig_to_dest).add(responseJson.result.dest_to_orig_time, 'minutes').format("MM/DD/YYYY hh:mm A"),
-            destToOrigTime: moment(responseJson.result.dest_to_orig).add(responseJson.result.orig_to_dest_time, 'minutes').format("MM/DD/YYYY hh:mm A"),
+            travelTime: Math.round(responseJson.result.dest_to_orig_time) + Math.round(responseJson.result.orig_to_dest_time),
+            origToDestTime: moment(responseJson.result.orig_to_dest).add(Math.round(responseJson.result.dest_to_orig_time), 'minutes').format("MM/DD/YYYY hh:mm A"),
+            destToOrigTime: moment(responseJson.result.dest_to_orig).add(Math.round(responseJson.result.orig_to_dest_time), 'minutes').format("MM/DD/YYYY hh:mm A"),
             origToDestSummary: responseJson.result.orig_to_dest_summary,
             destToOrigSummary: responseJson.result.dest_to_orig_summary,
             origToDestTimeToLeave: moment(responseJson.result.orig_to_dest).format("MM/DD/YYYY hh:mm A"),
@@ -313,7 +313,7 @@ class CalculateTimeFormComponent extends React.Component{
             <b>Timezone: </b> {this.state.timeZone}<br/>
             <b>Best time to leave from origin: </b> {this.state.origToDestTimeToLeave}<br/>
             <b>Best time to return from destination: </b> {this.state.destToOrigTimeToLeave}<br/>
-            <b>Estimated roundtrip travel time: </b> {Math.round(this.state.travelTime)} minutes<br/>
+            <b>Estimated roundtrip travel time: </b> {this.state.travelTime} minutes<br/>
             <b>Origin to destination route: </b> {this.state.origToDestSummary}<br/>
             <b>Estimated arrival at destination: </b> {this.state.origToDestTime}<br/> 
             <b>Destination to origin route: </b> {this.state.destToOrigSummary}<br/>

@@ -5,6 +5,9 @@ import './react-datetime.css';
 import PlacesAutocomplete from 'react-places-autocomplete';
 import AlertContainer from 'react-alert';
 import { Button, Checkbox, Col, FormControl, FormGroup, Form, Modal } from 'react-bootstrap';
+var ReactGA = require('react-ga');
+ReactGA.initialize('UA-101117431-1');
+ReactGA.pageview('/index.html');
 
 var moment = require('moment');
 
@@ -73,6 +76,12 @@ class CalculateTimeFormComponent extends React.Component{
       } else if(this.state.jobStatus === 'api_error_timezonelookup'){
         errorText = "Error: Could not get timezone from Google API for start location.";
       };
+      var eventLabel = this.state.destOnly ? (this.state.jobStatus + ": one-way") : (this.state.jobStatus + ": roundtrip")
+      ReactGA.event({
+       category: 'User',
+       action: 'Job error',
+       label: eventLabel 
+      });
       this.msg.error(errorText);
     }
 
@@ -140,6 +149,13 @@ class CalculateTimeFormComponent extends React.Component{
           this.setState({jobStatus: responseJson.status});
           setTimeout(() => { this.doPollJobStatus(jobIdentifier) }, 5000);
         }else{
+          var eventLabel = this.state.destOnly ? "One-way" : "Roundtrip"
+          ReactGA.event({
+            category: 'User',
+            action: 'Successful request results returned',
+            label: eventLabel
+          });
+
           if(responseJson.result.requested.orig_to_dest_only === false){
             this.setState({ 
               travelTime: Math.round(responseJson.result.dest_to_orig_time) + Math.round(responseJson.result.orig_to_dest_time),
@@ -168,6 +184,13 @@ class CalculateTimeFormComponent extends React.Component{
   }
 
   doFetchJobStatus = () => {    
+    var eventLabel = this.state.destOnly ? "One-way" : "Roundtrip"
+    ReactGA.event({
+     category: 'User',
+     action: 'Submitted request',
+     label: eventLabel
+    });
+
     if(this.state.jobStatus === 'waiting_for_job'){
       var url = 'http://traveltime-jobservice.integrated.pro/v1/run_task'
       var departEnd = moment(this.state.startTime);

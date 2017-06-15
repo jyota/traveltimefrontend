@@ -4,7 +4,7 @@ import Datetime from 'react-datetime';
 import './react-datetime.css';
 import PlacesAutocomplete from 'react-places-autocomplete';
 import AlertContainer from 'react-alert';
-import { Button, Checkbox, Col, FormControl, FormGroup, Form, Modal } from 'react-bootstrap';
+import { Button, Col, FormControl, FormGroup, Form, Modal } from 'react-bootstrap';
 var ReactGA = require('react-ga');
 ReactGA.initialize('UA-101117431-1');
 ReactGA.pageview('/index.html');
@@ -16,8 +16,8 @@ class App extends Component {
     return (<div>
       <div class="page-header">
       <h1>Car Travel Time</h1>
-      Have a flexible schedule? Minimize your time spent in the car going somewhere with this calculator.<br/>
-      Allows for inclusion of return trip in total travel time calculation.
+      Have a flexible schedule? Minimize your time spent driving with this app.<br/>
+      You can get one-way or roundtrip travel estimates based on several traffic models.<br/>
       </div>
       
       <br/><br/>
@@ -247,7 +247,7 @@ class CalculateTimeFormComponent extends React.Component{
     }
   }
 
-  toggleDestCheckbox = () => {
+  toggleDest = () => {
     this.setState({ destOnly: !this.state.destOnly });
   }
 
@@ -274,12 +274,13 @@ class CalculateTimeFormComponent extends React.Component{
       <Form horizontal>
        <FormGroup controlId="formHorizontalDestOnly">
         <Col className="text-right" xs={4} md={2}>
-          <b>Origin to destination estimate only: </b>
+          <b>Estimate type</b>
         </Col>
         <Col xs={8} md={10}>
-        <Checkbox 
-            value={this.state.destOnly}
-            onChange={this.toggleDestCheckbox}></Checkbox>
+        <FormControl style={{width: '150px'}} componentClass="select" placeholder={true} name="destOnly" value={this.state.destOnly} onChange={this.toggleDest}>
+            <option value={true}>One-way</option>
+            <option value={false}>Roundtrip</option>
+          </FormControl>
         </Col>
        </FormGroup>
        <FormGroup controlId="formHorizontalOriginAddr">        

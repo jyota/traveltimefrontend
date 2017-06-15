@@ -15,9 +15,9 @@ class App extends Component {
   render() {
     return (<div>
       <div class="page-header">
-      <h1>Car Travel Time</h1>
-      Have a flexible schedule? Minimize your time spent driving with this app.<br/>
-      You can get one-way or roundtrip travel estimates based on several traffic models.<br/>
+      <h1>Traveltime. <small>Minimize your time spent driving.</small></h1>
+      Flexible schedule? This app helps you find the best time to drive where you need to go in order to spend the least time in your car.<br/>
+      One-way or roundtrip travel estimates available based on several traffic models.<br/>
       </div>
       
       <br/><br/>
